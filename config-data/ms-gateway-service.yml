@@ -1,0 +1,57 @@
+server:
+  port: 82
+
+eureka:
+  client:
+    serviceUrl:
+      #defaultZone: http://localhost:8090/eureka
+      defaultZone: ${EUREKA_URI:http://localhost:8090/eureka}
+  instance:
+    #hostname: localhost
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enable: true
+      routes:
+        - id: ms-gestionestudiantes-service
+          uri: lb://ms-gestionestudiantes-service
+          predicates:
+            - Path=/estudiante/**, /historialacadémico/**
+        - id: ms-gestiondocentes-service
+          uri: lb://ms-gestiondocentes-service
+          predicates:
+            - Path=/asignatura/**, /docente/**
+        - id: ms-monitoreoasistencia-service
+          uri: lb://ms-monitoreoasistencia-service
+          predicates:
+            - Path=/registroasistencia/**
+        - id: ms-reporte-service
+          uri: lb://ms-reporte-service
+          predicates:
+            - Path=/reportes/**
+        - id: ms-matriculas-service
+          uri: lb://ms-matriculas-service
+          predicates:
+            - Path=/cursos/**, /matriculas/**
+        - id: ms-catalogo-service
+          uri: lb://ms-catalogo-service
+          predicates:
+            - Path=/categoria/**, /producto/**
+          filters:
+            - AuthFilter
+        - id: ms-cliente-service
+          uri: lb://ms-cliente-service
+          predicates:
+            - Path=/cliente/**
+        - id: ms-pedido-service
+          uri: lb://ms-pedido-service
+          predicates:
+            - Path=/pedido/**, /pedidodetalle/**
+        - id: ms-auth-service
+          uri: lb://ms-auth-service
+          predicates:
+            - Path=/auth/**
